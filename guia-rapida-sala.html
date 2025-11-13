@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Sala - Guía Rápida</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #2563eb;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: #f9fafb;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .section h2 {
+            color: #1f2937;
+            margin-bottom: 15px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .step h3 {
+            display: inline;
+            color: #1f2937;
+            font-size: 18px;
+        }
+
+        .step p {
+            color: #4b5563;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        .tip {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .tip strong {
+            color: #92400e;
+        }
+
+        .warning {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .warning strong {
+            color: #991b1b;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .feature-text {
+            color: #1f2937;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 20px 10px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 Monitor de Sala - Guía Rápida</h1>
+        <p class="subtitle">Medicina Interna - Todo lo que necesitas saber para empezar</p>
+
+        <div class="section">
+            <h2>🚀 Inicio Rápido</h2>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <h3>Agregar tu primer paciente</h3>
+                <p>Click en <strong>"➕ Nuevo Paciente"</strong> y completa los datos básicos. Los campos marcados con * son obligatorios. El sistema calculará automáticamente el IMC y la superficie corporal.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <h3>Realizar una evaluación</h3>
+                <p>En la tarjeta del paciente, click <strong>"📝 Evaluar"</strong>. Completa signos vitales y la evolución en formato SOAP (Subjetivo, Objetivo, Assessment, Plan).</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <h3>Gestionar pendientes</h3>
+                <p>Click <strong>"⚠️ Pendientes"</strong> para agregar tareas. Marca como urgente lo importante y completa el checkbox cuando lo realices.</p>
+            </div>
+
+            <div class="tip">
+                <strong>💡 Tip:</strong> La aplicación funciona completamente offline después de la primera carga. Tus datos se guardan automáticamente en tu dispositivo.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Funcionalidades Clave</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔢</div>
+                    <div class="feature-text">Ordenamiento Inteligente por Cama</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <div class="feature-text">Fichas Completas Editables</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <div class="feature-text">Evaluaciones SOAP Diarias</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚠️</div>
+                    <div class="feature-text">Gestión de Pendientes</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚨</div>
+                    <div class="feature-text">Alertas de Alergias</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-text">Informes Completos</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <div class="feature-text">Backup y Restauración</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-text">100% Offline</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔍 Búsqueda y Navegación</h2>
+            
+            <div class="step">
+                <span class="step-number">🔍</span>
+                <h3>Búsqueda Rápida</h3>
+                <p>Usa el campo de búsqueda para filtrar por nombre, número de cama o diagnóstico. Los resultados se actualizan en tiempo real.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">↕️</span>
+                <h3>Opciones de Ordenamiento</h3>
+                <p><strong>Por Cama:</strong> Orden numérico correcto (1, 2, 3... 7, 8...) ← Recomendado<br>
+                <strong>Por Nombre:</strong> Alfabético<br>
+                <strong>Por Fecha:</strong> Más recientes primero<br>
+                <strong>Por Días:</strong> Mayor estadía primero</p>
+            </div>
+
+            <div class="tip">
+                <strong>💡 Tip:</strong> El ordenamiento por cama es inteligente - si agregas la cama 7 después de la 20, se ubicará automáticamente entre la 6 y la 8.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎨 Indicadores Visuales</h2>
+            
+            <div class="step">
+                <h3>Colores de Tarjetas</h3>
+                <p>
+                    <strong>🟦 Blanco:</strong> Sin alertas<br>
+                    <strong>🟨 Amarillo claro:</strong> Alta próxima (≤3 días)<br>
+                    <strong>🟥 Rojo claro:</strong> Pendientes urgentes activos
+                </p>
+            </div>
+
+            <div class="step">
+                <h3>Badges Importantes</h3>
+                <p>
+                    <strong>🔵 Días:</strong> Tiempo de estadía<br>
+                    <strong>🟡 Alta en Xd:</strong> Días hasta alta<br>
+                    <strong>🔴 X pendientes:</strong> Tareas activas<br>
+                    <strong>🚨 ALERGIA:</strong> Alerta pulsante de alergias
+                </p>
+            </div>
+
+            <div class="step">
+                <h3>Estado de Evaluación</h3>
+                <p>
+                    <strong>🟢 Verde:</strong> Evaluado hace menos de 24h<br>
+                    <strong>🔴 Rojo:</strong> Sin evaluación o hace más de 24h
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💾 Gestión de Datos</h2>
+            
+            <div class="step">
+                <span class="step-number">📥</span>
+                <h3>Exportar (Backup)</h3>
+                <p>Click en "Exportar" en el header. Se descargará un archivo JSON con todos tus datos. Guárdalo en un lugar seguro.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">📤</span>
+                <h3>Importar (Restaurar)</h3>
+                <p>Click en "Importar", selecciona el archivo JSON y confirma. Esto reemplazará todos los datos actuales.</p>
+            </div>
+
+            <div class="warning">
+                <strong>⚠️ Importante:</strong> Exporta tus datos regularmente (recomendado: semanalmente). Los datos se guardan solo en tu dispositivo y pueden perderse si limpias el navegador.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📄 Generación de Informes</h2>
+            
+            <div class="step">
+                <h3>Informe Individual Completo</h3>
+                <p>1. Abre la historia del paciente (botón "📊 Historia")<br>
+                2. Click en "📄 Generar Informe Completo"<br>
+                3. Se descargará un archivo .txt con toda la información</p>
+            </div>
+
+            <div class="step">
+                <h3>Contenido del Informe</h3>
+                <p>• Datos completos del paciente<br>
+                • Alergias (destacadas)<br>
+                • Motivo de ingreso y diagnósticos<br>
+                • Antecedentes<br>
+                • Tratamiento actual<br>
+                • Todas las evaluaciones con signos vitales y SOAP</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚕️ Mejores Prácticas</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <div class="feature-text">Evalúa todos los pacientes diariamente</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <div class="feature-text">Verifica alergias en cada ingreso</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <div class="feature-text">Marca urgentes solo lo importante</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <div class="feature-text">Exporta datos semanalmente</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <div class="feature-text">Establece fecha de alta estimada</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <div class="feature-text">Elimina pacientes dados de alta</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚫 Limitaciones y Advertencias</h2>
+            
+            <div class="warning">
+                <strong>⚠️ Importante - Lee cuidadosamente:</strong><br><br>
+                • Esta herramienta NO sustituye el expediente clínico oficial<br>
+                • Los datos se guardan SOLO en tu dispositivo local<br>
+                • NO hay sincronización entre dispositivos<br>
+                • Es tu responsabilidad hacer backups regulares<br>
+                • NO compartir dispositivo sin medidas de seguridad<br>
+                • Herramienta de APOYO, el juicio clínico es tuyo
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🐛 Problemas Comunes</h2>
+            
+            <div class="step">
+                <h3>No funciona offline</h3>
+                <p><strong>Solución:</strong> Recarga la página una vez con internet para activar el modo offline.</p>
+            </div>
+
+            <div class="step">
+                <h3>Se borraron mis datos</h3>
+                <p><strong>Solución:</strong> Importa tu último backup. Configura tu navegador para no borrar datos de sitios.</p>
+            </div>
+
+            <div class="step">
+                <h3>El ordenamiento no funciona</h3>
+                <p><strong>Solución:</strong> Actualiza tu navegador a la última versión.</p>
+            </div>
+
+            <div class="step">
+                <h3>No se instala como PWA</h3>
+                <p><strong>Solución:</strong> Usa Chrome/Edge en Android o Safari en iOS. Busca "Agregar a pantalla de inicio".</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="monitor-sala.html" class="btn">🚀 Abrir Monitor de Sala</a>
+            <a href="README-monitor-sala.md" class="btn btn-secondary" target="_blank">📖 Documentación Completa</a>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px;">
+            <p><strong>Monitor de Sala v1.0</strong></p>
+            <p>Desarrollado para Medicina Interna</p>
+            <p>Noviembre 2025</p>
+        </div>
+    </div>
+</body>
+</html>

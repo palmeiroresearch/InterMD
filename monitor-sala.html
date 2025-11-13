@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Sala - Medicina Interna</title>
+    <link rel="manifest" href="manifest-sala.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icon-sala-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #1e40af;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #1e40af;
+        }
+
+        .btn-secondary:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+            background: white;
+        }
+
+        .content {
+            padding: 20px;
+            min-height: 500px;
+        }
+
+        .search-sort-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .sort-controls label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .sort-controls select {
+            padding: 8px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .patient-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .patient-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .patient-card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .patient-card.alta-proxima {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .patient-card.pendientes {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .bed-number {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #2563eb;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .patient-header {
+            margin-bottom: 15px;
+            padding-right: 55px;
+        }
+
+        .patient-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .patient-id {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .badges-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .badge-age {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-days {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .badge-pending {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-alta {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-allergy {
+            background: #fecaca;
+            color: #7f1d1d;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .patient-info {
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 13px;
+        }
+
+        .info-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #1f2937;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .diagnosis-box {
+            background: #f0f9ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 3px solid #2563eb;
+        }
+
+        .diagnosis-box strong {
+            color: #1e40af;
+            font-size: 12px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .diagnosis-text {
+            color: #1f2937;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .last-eval {
+            color: #059669;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+
+        .no-eval {
+            color: #dc2626;
+        }
+
+        .patient-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #1f2937;
+            font-size: 24px;
+        }
+
+        .close-modal {
+            background: #f3f4f6;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            color: #6b7280;
+        }
+
+        .close-modal:hover {
+            background: #e5e7eb;
+        }
+
+        .form-section {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .form-section h3 {
+            color: #1f2937;
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .required::after {
+            content: " *";
+            color: #ef4444;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .calculated-field {
+            background: #f0fdf4;
+            border-color: #86efac;
+            font-weight: 600;
+            color: #166534;
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .pending-list {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .pending-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .pending-item:hover {
+            border-color: #2563eb;
+            background: #f0f9ff;
+        }
+
+        .pending-item.urgent {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .pending-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .pending-text {
+            flex: 1;
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .pending-date {
+            font-size: 12px;
+            color: #6b7280;
+            margin-right: 10px;
+        }
+
+        .delete-pending {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .delete-pending:hover {
+            background: #fecaca;
+        }
+
+        .add-pending-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .add-pending-form input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+
+        .urgency-select {
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .eval-history-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .eval-date {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .eval-vitals {
+            background: #f0f9ff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .eval-section {
+            margin-bottom: 10px;
+        }
+
+        .eval-section strong {
+            color: #1f2937;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .eval-section p {
+            color: #4b5563;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #16a34a;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: none;
+            z-index: 10000;
+        }
+
+        .offline-indicator.offline {
+            background: #ef4444;
+            display: block;
+        }
+
+        .allergy-warning {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .allergy-warning-icon {
+            font-size: 24px;
+        }
+
+        .allergy-warning-text {
+            flex: 1;
+            color: #991b1b;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .patient-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .search-sort-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sort-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        📱 Modo offline
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>
+                🏥 Monitor de Sala - Medicina Interna
+                <span style="background: white; color: #2563eb; padding: 4px 10px; border-radius: 12px; font-size: 14px; margin-left: 10px;" id="totalPatientsCount">0</span>
+            </h1>
+            <div class="header-actions">
+                <button class="btn btn-success" onclick="openNewPatientModal()">
+                    ➕ Nuevo Paciente
+                </button>
+                <button class="btn btn-secondary" onclick="exportAllData()">
+                    📥 Exportar
+                </button>
+                <button class="btn btn-secondary" onclick="showImportModal()">
+                    📤 Importar
+                </button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('patients')">
+                👥 Pacientes
+            </div>
+            <div class="tab" onclick="switchTab('pending')">
+                ⚠️ Pendientes
+            </div>
+            <div class="tab" onclick="switchTab('stats')">
+                📊 Estadísticas
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Tab: Pacientes -->
+            <div id="patientsTab">
+                <div class="search-sort-bar">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre, cama, diagnóstico..." oninput="filterPatients()">
+                    </div>
+                    <div class="sort-controls">
+                        <label>Ordenar por:</label>
+                        <select id="sortSelect" onchange="renderPatients()">
+                            <option value="bed">Número de Cama</option>
+                            <option value="name">Nombre</option>
+                            <option value="admission">Fecha de Ingreso</option>
+                            <option value="days">Días de Estadía</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalPatients">0</div>
+                        <div class="stat-label">Pacientes en Sala</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left-color: #f59e0b;">
+                        <div class="stat-value" style="color: #f59e0b;" id="altasProximas">0</div>
+                        <div class="stat-label">Altas Próximas (≤3d)</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-left-color: #ef4444;">
+                        <div class="stat-value" style="color: #ef4444;" id="totalPending">0</div>
+                        <div class="stat-label">Pendientes Totales</div>
+                    </div>
+                </div>
+
+                <div class="patient-grid" id="patientGrid">
+                    <!-- Pacientes se cargarán dinámicamente -->
+                </div>
+
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-state-icon">🏥</div>
+                    <h3>No hay pacientes en sala</h3>
+                    <p>Agrega el primer paciente para comenzar</p>
+                </div>
+            </div>
+
+            <!-- Tab: Pendientes -->
+            <div id="pendingTab" style="display: none;">
+                <h2 style="margin-bottom: 20px;">Todos los Pendientes</h2>
+                <div id="allPendingContent">
+                    <!-- Pendientes consolidados se cargarán aquí -->
+                </div>
+            </div>
+
+            <!-- Tab: Estadísticas -->
+            <div id="statsTab" style="display: none;">
+                <h2 style="margin-bottom: 20px;">Estadísticas de la Sala</h2>
+                <div id="statsContent">
+                    <!-- Estadísticas se cargarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nuevo/Editar Paciente -->
+    <div class="modal" id="patientModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="patientModalTitle">Nuevo Paciente</h2>
+                <button class="close-modal" onclick="closeModal('patientModal')">×</button>
+            </div>
+            <form id="patientForm" onsubmit="savePatient(event)">
+                <input type="hidden" id="editPatientId" value="">
+                
+                <div class="form-section">
+                    <h3>👤 Datos Personales</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Nombre Completo</label>
+                            <input type="text" id="patientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Número de Cama</label>
+                            <input type="number" id="bedNumber" required min="1" max="999">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Edad</label>
+                            <input type="number" id="patientAge" required min="0" max="120">
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Sexo</label>
+                            <select id="patientSex" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Historia Clínica</label>
+                            <input type="text" id="patientHistory">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Peso (kg)</label>
+                            <input type="number" id="patientWeight" min="1" max="300" step="0.1" onchange="calculateMetrics()" placeholder="Dejar vacío si no disponible">
+                        </div>
+                        <div class="form-group">
+                            <label>Talla (cm)</label>
+                            <input type="number" id="patientHeight" min="30" max="250" step="0.1" onchange="calculateMetrics()" placeholder="Dejar vacío si no disponible">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>IMC (kg/m²)</label>
+                            <input type="number" id="patientIMC" class="calculated-field" readonly step="0.01">
+                            <div class="input-hint">Calculado automáticamente</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Superficie Corporal (m²)</label>
+                            <input type="number" id="patientSC" class="calculated-field" readonly step="0.01">
+                            <div class="input-hint">Calculado automáticamente</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>🏥 Información de Ingreso</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Fecha de Ingreso</label>
+                            <input type="date" id="admissionDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha Probable de Alta</label>
+                            <input type="date" id="dischargeDate">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required">Motivo de Ingreso</label>
+                        <textarea id="admissionReason" required placeholder="Descripción breve del motivo de ingreso..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required">Diagnósticos Principales</label>
+                        <textarea id="mainDiagnosis" required placeholder="Lista de diagnósticos principales separados por línea..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>📋 Antecedentes</h3>
+                    <div class="form-group">
+                        <label>Antecedentes Patológicos Personales</label>
+                        <textarea id="personalHistory" placeholder="HTA, DM, EPOC, etc..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🚨 Alergias</label>
+                        <input type="text" id="allergies" placeholder="Medicamentos, alimentos... (dejar vacío si ninguna)">
+                        <div class="input-hint">Se mostrará destacado en la ficha del paciente</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>💊 Tratamiento Actual</h3>
+                    <div class="form-group">
+                        <label>Medicamentos y Dosis</label>
+                        <textarea id="currentTreatment" placeholder="Lista de medicamentos con dosis e intervalos..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <span id="savePatientBtnText">Guardar Paciente</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Evaluación Diaria -->
+    <div class="modal" id="evalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📝 Evaluación Diaria</h2>
+                <button class="close-modal" onclick="closeModal('evalModal')">×</button>
+            </div>
+            <div>
+                <input type="hidden" id="editEvalIndex" value="">
+                <h3 id="evalPatientName" style="color: #6b7280; margin-bottom: 20px;"></h3>
+                
+                <div class="form-section">
+                    <h3>🩺 Signos Vitales</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Temperatura (°C)</label>
+                            <input type="number" id="evalTemp" step="0.1" min="35" max="42" placeholder="36.5">
+                        </div>
+                        <div class="form-group">
+                            <label>FC (lpm)</label>
+                            <input type="number" id="evalHR" min="30" max="220" placeholder="80">
+                        </div>
+                        <div class="form-group">
+                            <label>FR (rpm)</label>
+                            <input type="number" id="evalRR" min="8" max="60" placeholder="18">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>TA Sistólica (mmHg)</label>
+                            <input type="number" id="evalSBP" min="50" max="250" placeholder="120" onchange="calculatePAM()">
+                        </div>
+                        <div class="form-group">
+                            <label>TA Diastólica (mmHg)</label>
+                            <input type="number" id="evalDBP" min="30" max="150" placeholder="80" onchange="calculatePAM()">
+                        </div>
+                        <div class="form-group">
+                            <label>PAM (mmHg)</label>
+                            <input type="number" id="evalPAM" class="calculated-field" readonly>
+                            <div class="input-hint">Calculada: (SBP + 2×DBP)/3</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>SatO₂ (%)</label>
+                            <input type="number" id="evalSatO2" min="50" max="100" placeholder="98">
+                        </div>
+                        <div class="form-group">
+                            <label>Glicemia (mg/dL)</label>
+                            <input type="number" id="evalGlucose" min="0" max="1000" placeholder="100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>🔍 Evolución Clínica</h3>
+                    <div class="form-group">
+                        <label>Subjetivo (Síntomas del Paciente)</label>
+                        <textarea id="evalSubjective" placeholder="Cómo se siente el paciente, síntomas actuales..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Objetivo (Examen Físico)</label>
+                        <textarea id="evalObjective" placeholder="Hallazgos del examen físico..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Impresión Diagnóstica</label>
+                        <textarea id="evalAssessment" placeholder="Evaluación actual de los diagnósticos..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Plan de Manejo</label>
+                        <textarea id="evalPlan" placeholder="Conducta, cambios en tratamiento, estudios pendientes..."></textarea>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%;" onclick="saveEval()">
+                    <span id="saveEvalBtnText">Guardar Evaluación</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ficha Completa del Paciente -->
+    <div class="modal" id="patientFileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 Ficha Completa del Paciente</h2>
+                <button class="close-modal" onclick="closeModal('patientFileModal')">×</button>
+            </div>
+            <div id="patientFileContent">
+                <!-- Contenido se cargará dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Historia de Evaluaciones -->
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 Historia de Evaluaciones</h2>
+                <button class="close-modal" onclick="closeModal('historyModal')">×</button>
+            </div>
+            <div>
+                <h3 id="historyPatientName" style="color: #6b7280; margin-bottom: 20px;"></h3>
+                <div id="historyContent">
+                    <!-- Historia se cargará dinámicamente -->
+                </div>
+                <button class="btn btn-success" style="width: 100%; margin-top: 20px;" onclick="generateReport()">
+                    📄 Generar Informe Completo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Gestión de Pendientes -->
+    <div class="modal" id="pendingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚠️ Pendientes</h2>
+                <button class="close-modal" onclick="closeModal('pendingModal')">×</button>
+            </div>
+            <div>
+                <h3 id="pendingPatientName" style="color: #6b7280; margin-bottom: 20px;"></h3>
+                
+                <div class="pending-list" id="pendingList">
+                    <!-- Pendientes se cargarán aquí -->
+                </div>
+
+                <div class="add-pending-form">
+                    <input type="text" id="newPendingText" placeholder="Descripción del pendiente...">
+                    <select id="newPendingUrgency" class="urgency-select">
+                        <option value="normal">Normal</option>
+                        <option value="urgent">Urgente</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="addPending()">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Importar -->
+    <div class="modal" id="importModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📤 Importar Datos</h2>
+                <button class="close-modal" onclick="closeModal('importModal')">×</button>
+            </div>
+            <div>
+                <div style="background: #fef3c7; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #fbbf24;">
+                    <strong>⚠️ Advertencia:</strong> Importar datos reemplazará TODOS los datos actuales.
+                </div>
+                
+                <div class="form-group">
+                    <label>Seleccionar archivo JSON de respaldo</label>
+                    <input type="file" id="importFile" accept=".json" style="padding: 10px; border: 2px dashed #2563eb;">
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%;" onclick="importData()">
+                    Importar Datos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let patients = [];
+        let currentPatientId = null;
+
+        // Inicializar la aplicación
+        function init() {
+            loadPatients();
+            renderPatients();
+            updateStats();
+            updateConnectionStatus();
+            
+            // Establecer fecha de hoy por defecto en formulario
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('admissionDate').value = today;
+        }
+
+        // Cargar pacientes del localStorage
+        function loadPatients() {
+            const stored = localStorage.getItem('sala_patients');
+            if (stored) {
+                patients = JSON.parse(stored);
+            }
+        }
+
+        // Guardar pacientes en localStorage
+        function savePatients() {
+            localStorage.setItem('sala_patients', JSON.stringify(patients));
+        }
+
+        // Calcular métricas antropométricas
+        function calculateMetrics() {
+            const weight = parseFloat(document.getElementById('patientWeight').value);
+            const heightCm = parseFloat(document.getElementById('patientHeight').value);
+            
+            if (weight && heightCm) {
+                const heightM = heightCm / 100;
+                const imc = weight / (heightM * heightM);
+                document.getElementById('patientIMC').value = imc.toFixed(2);
+                
+                const sc = Math.sqrt((heightCm * weight) / 3600);
+                document.getElementById('patientSC').value = sc.toFixed(2);
+            }
+        }
+
+        // Calcular PAM
+        function calculatePAM() {
+            const sbp = parseFloat(document.getElementById('evalSBP').value);
+            const dbp = parseFloat(document.getElementById('evalDBP').value);
+            
+            if (sbp && dbp) {
+                const pam = (sbp + 2 * dbp) / 3;
+                document.getElementById('evalPAM').value = pam.toFixed(0);
+            }
+        }
+
+        // Cambiar de tab
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('patientsTab').style.display = tab === 'patients' ? 'block' : 'none';
+            document.getElementById('pendingTab').style.display = tab === 'pending' ? 'block' : 'none';
+            document.getElementById('statsTab').style.display = tab === 'stats' ? 'block' : 'none';
+
+            if (tab === 'pending') {
+                renderAllPending();
+            } else if (tab === 'stats') {
+                renderStats();
+            }
+        }
+
+        // Abrir modal de nuevo paciente
+        function openNewPatientModal() {
+            document.getElementById('patientModalTitle').textContent = 'Nuevo Paciente';
+            document.getElementById('savePatientBtnText').textContent = 'Guardar Paciente';
+            document.getElementById('editPatientId').value = '';
+            document.getElementById('patientForm').reset();
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('admissionDate').value = today;
+            
+            document.getElementById('patientModal').classList.add('show');
+        }
+
+        // Editar paciente
+        function editPatient(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            if (!patient) return;
+
+            closeModal('patientFileModal');
+
+            document.getElementById('patientModalTitle').textContent = 'Editar Paciente';
+            document.getElementById('savePatientBtnText').textContent = 'Actualizar Paciente';
+            document.getElementById('editPatientId').value = patientId;
+
+            document.getElementById('patientName').value = patient.name;
+            document.getElementById('bedNumber').value = patient.bed;
+            document.getElementById('patientAge').value = patient.age;
+            document.getElementById('patientSex').value = patient.sex;
+            document.getElementById('patientHistory').value = patient.history || '';
+            document.getElementById('patientWeight').value = patient.weight;
+            document.getElementById('patientHeight').value = patient.height;
+            document.getElementById('admissionDate').value = patient.admissionDate;
+            document.getElementById('dischargeDate').value = patient.dischargeDate || '';
+            document.getElementById('admissionReason').value = patient.admissionReason;
+            document.getElementById('mainDiagnosis').value = patient.mainDiagnosis;
+            document.getElementById('personalHistory').value = patient.personalHistory || '';
+            document.getElementById('allergies').value = patient.allergies || '';
+            document.getElementById('currentTreatment').value = patient.currentTreatment || '';
+
+            calculateMetrics();
+            
+            document.getElementById('patientModal').classList.add('show');
+        }
+
+        // Cerrar modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Guardar paciente
+        function savePatient(event) {
+            event.preventDefault();
+            
+            const editId = document.getElementById('editPatientId').value;
+            
+            const weight = document.getElementById('patientWeight').value;
+            const height = document.getElementById('patientHeight').value;
+            const imc = document.getElementById('patientIMC').value;
+            const sc = document.getElementById('patientSC').value;
+            
+            const patientData = {
+                name: document.getElementById('patientName').value,
+                bed: parseInt(document.getElementById('bedNumber').value),
+                age: document.getElementById('patientAge').value,
+                sex: document.getElementById('patientSex').value,
+                history: document.getElementById('patientHistory').value,
+                weight: weight ? parseFloat(weight) : null,
+                height: height ? parseFloat(height) : null,
+                imc: imc ? parseFloat(imc) : null,
+                sc: sc ? parseFloat(sc) : null,
+                admissionDate: document.getElementById('admissionDate').value,
+                dischargeDate: document.getElementById('dischargeDate').value,
+                admissionReason: document.getElementById('admissionReason').value,
+                mainDiagnosis: document.getElementById('mainDiagnosis').value,
+                personalHistory: document.getElementById('personalHistory').value,
+                allergies: document.getElementById('allergies').value,
+                currentTreatment: document.getElementById('currentTreatment').value
+            };
+
+            let savedPatientId;
+
+            if (editId) {
+                const patient = patients.find(p => p.id === editId);
+                if (patient) {
+                    Object.assign(patient, patientData);
+                    savedPatientId = editId;
+                }
+            } else {
+                const newPatient = {
+                    ...patientData,
+                    id: Date.now().toString(),
+                    createdAt: new Date().toISOString(),
+                    evaluations: [],
+                    pending: []
+                };
+                patients.push(newPatient);
+                savedPatientId = newPatient.id;
+            }
+
+            savePatients();
+            renderPatients();
+            updateStats();
+            
+            document.getElementById('patientForm').reset();
+            closeModal('patientModal');
+            
+            if (savedPatientId) {
+                viewPatientFile(savedPatientId);
+            }
+        }
+
+        // Ver ficha completa
+        function viewPatientFile(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            if (!patient) return;
+
+            const daysAdmitted = Math.floor((new Date() - new Date(patient.admissionDate)) / (1000 * 60 * 60 * 24));
+            const daysToDischarge = patient.dischargeDate 
+                ? Math.ceil((new Date(patient.dischargeDate) - new Date()) / (1000 * 60 * 60 * 24))
+                : null;
+
+            let allergyWarning = '';
+            if (patient.allergies && patient.allergies.trim() !== '') {
+                allergyWarning = `
+                    <div class="allergy-warning">
+                        <div class="allergy-warning-icon">🚨</div>
+                        <div class="allergy-warning-text">ALERGIAS: ${patient.allergies}</div>
+                    </div>
+                `;
+            }
+
+            const content = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="color: #1f2937; margin: 0;">Cama ${patient.bed} - ${patient.name}</h3>
+                    <button class="btn btn-secondary btn-small" onclick="editPatient('${patient.id}')">
+                        ✏️ Editar Ficha
+                    </button>
+                </div>
+
+                ${allergyWarning}
+                
+                <div class="form-section">
+                    <h3>👤 Datos Personales</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb;">
+                            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Edad</div>
+                            <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-top: 3px;">${patient.age} años</div>
+                        </div>
+                        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb;">
+                            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Sexo</div>
+                            <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-top: 3px;">${patient.sex === 'M' ? 'Masculino' : 'Femenino'}</div>
+                        </div>
+                        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb;">
+                            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Historia Clínica</div>
+                            <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-top: 3px;">${patient.history || 'N/A'}</div>
+                        </div>
+                        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb;">
+                            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Peso</div>
+                            <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-top: 3px;">${patient.weight} kg</div>
+                        </div>
+                        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb;">
+                            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Talla</div>
+                            <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-top: 3px;">${patient.height} cm</div>
+                        </div>
+                        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb;">
+                            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">IMC</div>
+                            <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-top: 3px;">${patient.imc.toFixed(2)} kg/m²</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>🏥 Información de Hospitalización</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb;">
+                            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Fecha de Ingreso</div>
+                            <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-top: 3px;">${new Date(patient.admissionDate).toLocaleDateString('es-ES')}</div>
+                        </div>
+                        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb;">
+                            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Días de Estadía</div>
+                            <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-top: 3px;">${daysAdmitted} días</div>
+                        </div>
+                        ${daysToDischarge !== null ? `
+                        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid ${daysToDischarge <= 3 ? '#f59e0b' : '#2563eb'};">
+                            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Alta Probable en</div>
+                            <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-top: 3px;">${daysToDischarge} día(s)</div>
+                        </div>
+                        ` : ''}
+                        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb;">
+                            <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Evaluaciones</div>
+                            <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-top: 3px;">${patient.evaluations.length}</div>
+                        </div>
+                    </div>
+
+                    <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb; margin-top: 15px;">
+                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Motivo de Ingreso</div>
+                        <div style="font-size: 14px; color: #1f2937; line-height: 1.5;">${patient.admissionReason}</div>
+                    </div>
+
+                    <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb; margin-top: 15px;">
+                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Diagnósticos Principales</div>
+                        <div style="font-size: 14px; color: #1f2937; line-height: 1.5; white-space: pre-line;">${patient.mainDiagnosis}</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>📋 Antecedentes</h3>
+                    <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb;">
+                        <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Patológicos Personales</div>
+                        <div style="font-size: 14px; color: #1f2937; line-height: 1.5;">${patient.personalHistory || '<em style="color: #9ca3af;">Sin antecedentes registrados</em>'}</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>💊 Tratamiento Actual</h3>
+                    <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #2563eb;">
+                        <div style="font-size: 14px; color: #1f2937; line-height: 1.5; white-space: pre-line;">${patient.currentTreatment || '<em style="color: #9ca3af;">Sin tratamiento registrado</em>'}</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('patientFileContent').innerHTML = content;
+            document.getElementById('patientFileModal').classList.add('show');
+        }
+
+        // Renderizar pacientes con ordenamiento inteligente
+        function renderPatients() {
+            const grid = document.getElementById('patientGrid');
+            const emptyState = document.getElementById('emptyState');
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const sortBy = document.getElementById('sortSelect').value;
+
+            let filteredPatients = patients;
+
+            // Filtrar por búsqueda
+            if (searchValue) {
+                filteredPatients = patients.filter(p => 
+                    p.name.toLowerCase().includes(searchValue) ||
+                    p.bed.toString().includes(searchValue) ||
+                    p.mainDiagnosis.toLowerCase().includes(searchValue)
+                );
+            }
+
+            // Ordenar
+            filteredPatients.sort((a, b) => {
+                switch(sortBy) {
+                    case 'bed':
+                        return a.bed - b.bed; // Ordenamiento numérico correcto
+                    case 'name':
+                        return a.name.localeCompare(b.name);
+                    case 'admission':
+                        return new Date(b.admissionDate) - new Date(a.admissionDate);
+                    case 'days':
+                        const daysA = Math.floor((new Date() - new Date(a.admissionDate)) / (1000 * 60 * 60 * 24));
+                        const daysB = Math.floor((new Date() - new Date(b.admissionDate)) / (1000 * 60 * 60 * 24));
+                        return daysB - daysA;
+                    default:
+                        return 0;
+                }
+            });
+
+            if (filteredPatients.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            grid.innerHTML = filteredPatients.map(p => {
+                const daysAdmitted = Math.floor((new Date() - new Date(p.admissionDate)) / (1000 * 60 * 60 * 24));
+                const daysToDischarge = p.dischargeDate 
+                    ? Math.ceil((new Date(p.dischargeDate) - new Date()) / (1000 * 60 * 60 * 24))
+                    : null;
+                
+                const isAltaProxima = daysToDischarge !== null && daysToDischarge <= 3 && daysToDischarge >= 0;
+                const hasPending = p.pending && p.pending.length > 0;
+                const hasUrgentPending = p.pending && p.pending.some(pen => pen.urgent && !pen.completed);
+
+                const lastEval = p.evaluations.length > 0 
+                    ? new Date(p.evaluations[p.evaluations.length - 1].timestamp)
+                    : null;
+                
+                const hourssinceEval = lastEval 
+                    ? Math.floor((new Date() - lastEval) / (1000 * 60 * 60))
+                    : null;
+
+                let cardClass = 'patient-card';
+                if (isAltaProxima) cardClass += ' alta-proxima';
+                if (hasUrgentPending) cardClass += ' pendientes';
+
+                return `
+                    <div class="${cardClass}">
+                        <div class="bed-number">${p.bed}</div>
+                        
+                        <div class="patient-header">
+                            <div class="patient-name">${p.name}</div>
+                            <div class="patient-id">HC: ${p.history || 'N/A'} | ${p.age}a / ${p.sex === 'M' ? 'M' : 'F'}</div>
+                        </div>
+
+                        <div class="badges-row">
+                            <span class="badge badge-days">${daysAdmitted} día(s)</span>
+                            ${isAltaProxima ? `<span class="badge badge-alta">Alta en ${daysToDischarge}d</span>` : ''}
+                            ${hasPending ? `<span class="badge badge-pending">${p.pending.filter(pen => !pen.completed).length} pendiente(s)</span>` : ''}
+                            ${p.allergies ? '<span class="badge badge-allergy">⚠️ ALERGIA</span>' : ''}
+                        </div>
+
+                        <div class="diagnosis-box">
+                            <strong>Diagnóstico Principal:</strong>
+                            <div class="diagnosis-text">${p.mainDiagnosis.split('\n')[0].substring(0, 80)}${p.mainDiagnosis.length > 80 ? '...' : ''}</div>
+                        </div>
+
+                        <div class="patient-info">
+                            ${p.weight || p.imc ? `
+                            <div class="info-row">
+                                <span class="info-label">Peso/IMC:</span>
+                                <span class="info-value">${p.weight ? p.weight + 'kg' : 'N/A'}${p.imc ? ' / ' + p.imc.toFixed(1) : ''}</span>
+                            </div>
+                            ` : ''}
+                            <div class="info-row">
+                                <span class="info-label">Evaluaciones:</span>
+                                <span class="info-value">${p.evaluations.length}</span>
+                            </div>
+                        </div>
+
+                        <div class="last-eval ${!lastEval || hourssinceEval > 24 ? 'no-eval' : ''}">
+                            ${lastEval 
+                                ? `⏱️ Última evaluación: hace ${hourssinceEval}h`
+                                : '⚠️ Sin evaluaciones'}
+                        </div>
+
+                        <div class="patient-actions">
+                            <button class="btn btn-primary btn-small" onclick="openEvalModal('${p.id}')">
+                                📝 Evaluar
+                            </button>
+                            <button class="btn btn-secondary btn-small" onclick="viewPatientFile('${p.id}')">
+                                📋 Ficha
+                            </button>
+                            <button class="btn btn-secondary btn-small" onclick="viewHistory('${p.id}')">
+                                📊 Historia
+                            </button>
+                            <button class="btn btn-warning btn-small" onclick="openPendingModal('${p.id}')">
+                                ⚠️ Pendientes
+                            </button>
+                            <button class="btn btn-danger btn-small" onclick="deletePatient('${p.id}')">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filtrar pacientes (llamada desde búsqueda)
+        function filterPatients() {
+            renderPatients();
+        }
+
+        // Abrir modal de evaluación
+        function openEvalModal(patientId, evalIndex = null) {
+            currentPatientId = patientId;
+            const patient = patients.find(p => p.id === patientId);
+            
+            if (evalIndex !== null) {
+                closeModal('historyModal');
+                
+                const eval = patient.evaluations[evalIndex];
+                document.getElementById('editEvalIndex').value = evalIndex;
+                document.getElementById('saveEvalBtnText').textContent = 'Actualizar Evaluación';
+
+                document.getElementById('evalTemp').value = eval.vitals?.temp || '';
+                document.getElementById('evalHR').value = eval.vitals?.hr || '';
+                document.getElementById('evalRR').value = eval.vitals?.rr || '';
+                document.getElementById('evalSBP').value = eval.vitals?.sbp || '';
+                document.getElementById('evalDBP').value = eval.vitals?.dbp || '';
+                document.getElementById('evalPAM').value = eval.vitals?.pam || '';
+                document.getElementById('evalSatO2').value = eval.vitals?.sato2 || '';
+                document.getElementById('evalGlucose').value = eval.vitals?.glucose || '';
+                document.getElementById('evalSubjective').value = eval.subjective || '';
+                document.getElementById('evalObjective').value = eval.objective || '';
+                document.getElementById('evalAssessment').value = eval.assessment || '';
+                document.getElementById('evalPlan').value = eval.plan || '';
+            } else {
+                document.getElementById('editEvalIndex').value = '';
+                document.getElementById('saveEvalBtnText').textContent = 'Guardar Evaluación';
+                
+                // Limpiar campos
+                ['evalTemp', 'evalHR', 'evalRR', 'evalSBP', 'evalDBP', 'evalPAM', 'evalSatO2', 'evalGlucose',
+                 'evalSubjective', 'evalObjective', 'evalAssessment', 'evalPlan'].forEach(id => {
+                    document.getElementById(id).value = '';
+                });
+            }
+            
+            document.getElementById('evalPatientName').textContent = `Cama ${patient.bed} - ${patient.name}`;
+            document.getElementById('evalModal').classList.add('show');
+        }
+
+        // Guardar evaluación
+        function saveEval() {
+            const patient = patients.find(p => p.id === currentPatientId);
+            if (!patient) return;
+
+            const editIndex = document.getElementById('editEvalIndex').value;
+
+            const vitals = {
+                temp: document.getElementById('evalTemp').value,
+                hr: document.getElementById('evalHR').value,
+                rr: document.getElementById('evalRR').value,
+                sbp: document.getElementById('evalSBP').value,
+                dbp: document.getElementById('evalDBP').value,
+                pam: document.getElementById('evalPAM').value,
+                sato2: document.getElementById('evalSatO2').value,
+                glucose: document.getElementById('evalGlucose').value
+            };
+
+            const evalData = {
+                timestamp: new Date().toISOString(),
+                vitals: vitals,
+                subjective: document.getElementById('evalSubjective').value,
+                objective: document.getElementById('evalObjective').value,
+                assessment: document.getElementById('evalAssessment').value,
+                plan: document.getElementById('evalPlan').value
+            };
+
+            if (editIndex !== '') {
+                patient.evaluations[parseInt(editIndex)] = evalData;
+            } else {
+                patient.evaluations.push(evalData);
+            }
+
+            savePatients();
+            renderPatients();
+            updateStats();
+            closeModal('evalModal');
+        }
+
+        // Ver historia de evaluaciones
+        function viewHistory(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            if (!patient) return;
+
+            currentPatientId = patientId;
+            document.getElementById('historyPatientName').textContent = `Cama ${patient.bed} - ${patient.name}`;
+
+            const historyContent = document.getElementById('historyContent');
+            
+            if (patient.evaluations.length === 0) {
+                historyContent.innerHTML = '<p style="text-align: center; color: #9ca3af;">No hay evaluaciones registradas</p>';
+            } else {
+                historyContent.innerHTML = patient.evaluations
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .map((eval, index) => {
+                        const date = new Date(eval.timestamp);
+                        const originalIndex = patient.evaluations.indexOf(eval);
+                        
+                        let vitalsText = '';
+                        if (eval.vitals) {
+                            const v = eval.vitals;
+                            vitalsText = '<div class="eval-vitals"><strong>Signos Vitales:</strong> ';
+                            const vitalsArray = [];
+                            if (v.temp) vitalsArray.push(`Tax: ${v.temp}°C`);
+                            if (v.hr) vitalsArray.push(`FC: ${v.hr}`);
+                            if (v.rr) vitalsArray.push(`FR: ${v.rr}`);
+                            if (v.sbp && v.dbp) vitalsArray.push(`TA: ${v.sbp}/${v.dbp}`);
+                            if (v.pam) vitalsArray.push(`PAM: ${v.pam}`);
+                            if (v.sato2) vitalsArray.push(`SatO₂: ${v.sato2}%`);
+                            if (v.glucose) vitalsArray.push(`Glicemia: ${v.glucose}`);
+                            vitalsText += vitalsArray.join(' | ');
+                            vitalsText += '</div>';
+                        }
+                        
+                        return `
+                            <div class="eval-history-item">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <div class="eval-date">
+                                        📅 ${date.toLocaleDateString('es-ES')} - 🕐 ${date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                    <button class="btn btn-secondary btn-small" onclick="openEvalModal('${patientId}', ${originalIndex})">✏️ Editar</button>
+                                </div>
+                                ${vitalsText}
+                                ${eval.subjective ? `<div class="eval-section"><strong>Subjetivo:</strong><p>${eval.subjective}</p></div>` : ''}
+                                ${eval.objective ? `<div class="eval-section"><strong>Objetivo:</strong><p>${eval.objective}</p></div>` : ''}
+                                ${eval.assessment ? `<div class="eval-section"><strong>Impresión:</strong><p>${eval.assessment}</p></div>` : ''}
+                                ${eval.plan ? `<div class="eval-section"><strong>Plan:</strong><p>${eval.plan}</p></div>` : ''}
+                            </div>
+                        `;
+                    }).join('');
+            }
+
+            document.getElementById('historyModal').classList.add('show');
+        }
+
+        // Generar informe
+        function generateReport() {
+            const patient = patients.find(p => p.id === currentPatientId);
+            if (!patient) return;
+
+            const daysAdmitted = Math.floor((new Date() - new Date(patient.admissionDate)) / (1000 * 60 * 60 * 24));
+
+            let report = `INFORME CLÍNICO - MEDICINA INTERNA\n`;
+            report += `===========================================\n\n`;
+            report += `DATOS DEL PACIENTE:\n`;
+            report += `Nombre: ${patient.name}\n`;
+            report += `Cama: ${patient.bed} | Historia Clínica: ${patient.history || 'N/A'}\n`;
+            report += `Edad: ${patient.age} años | Sexo: ${patient.sex === 'M' ? 'Masculino' : 'Femenino'}\n`;
+            if (patient.weight || patient.height || patient.imc) {
+                const weightStr = patient.weight ? `${patient.weight} kg` : 'No registrado';
+                const heightStr = patient.height ? `${patient.height} cm` : 'No registrado';
+                const imcStr = patient.imc ? `${patient.imc.toFixed(2)} kg/m²` : 'N/A';
+                report += `Peso: ${weightStr} | Talla: ${heightStr} | IMC: ${imcStr}\n`;
+            }
+            report += `\n`;
+            
+            if (patient.allergies) {
+                report += `⚠️⚠️⚠️ ALERGIAS: ${patient.allergies} ⚠️⚠️⚠️\n\n`;
+            }
+
+            report += `HOSPITALIZACIÓN:\n`;
+            report += `Fecha de ingreso: ${new Date(patient.admissionDate).toLocaleDateString('es-ES')}\n`;
+            report += `Días de estadía: ${daysAdmitted}\n`;
+            if (patient.dischargeDate) {
+                report += `Fecha probable de alta: ${new Date(patient.dischargeDate).toLocaleDateString('es-ES')}\n`;
+            }
+            report += `\nMotivo de ingreso:\n${patient.admissionReason}\n\n`;
+            
+            report += `DIAGNÓSTICOS PRINCIPALES:\n${patient.mainDiagnosis}\n\n`;
+            
+            if (patient.personalHistory) {
+                report += `ANTECEDENTES PATOLÓGICOS PERSONALES:\n${patient.personalHistory}\n\n`;
+            }
+
+            if (patient.currentTreatment) {
+                report += `TRATAMIENTO ACTUAL:\n${patient.currentTreatment}\n\n`;
+            }
+
+            report += `EVOLUCIONES (${patient.evaluations.length} total):\n`;
+            report += `-----------------------------------\n\n`;
+
+            patient.evaluations.forEach((eval, index) => {
+                const date = new Date(eval.timestamp);
+                report += `[${index + 1}] ${date.toLocaleString('es-ES')}\n`;
+                
+                if (eval.vitals) {
+                    const v = eval.vitals;
+                    report += `Signos Vitales:\n`;
+                    if (v.temp) report += `  • Temperatura: ${v.temp}°C\n`;
+                    if (v.hr) report += `  • FC: ${v.hr} lpm\n`;
+                    if (v.rr) report += `  • FR: ${v.rr} rpm\n`;
+                    if (v.sbp && v.dbp) report += `  • TA: ${v.sbp}/${v.dbp} mmHg`;
+                    if (v.pam) report += ` (PAM: ${v.pam})\n`; else report += `\n`;
+                    if (v.sato2) report += `  • SatO₂: ${v.sato2}%\n`;
+                    if (v.glucose) report += `  • Glicemia: ${v.glucose} mg/dL\n`;
+                }
+                
+                if (eval.subjective) report += `\nSubjetivo:\n${eval.subjective}\n`;
+                if (eval.objective) report += `\nObjetivo:\n${eval.objective}\n`;
+                if (eval.assessment) report += `\nImpresión:\n${eval.assessment}\n`;
+                if (eval.plan) report += `\nPlan:\n${eval.plan}\n`;
+                report += `\n`;
+            });
+
+            report += `\n\nInforme generado: ${new Date().toLocaleString('es-ES')}\n`;
+
+            const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Informe_Cama${patient.bed}_${patient.name.replace(/\s/g, '_')}_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Abrir modal de pendientes
+        function openPendingModal(patientId) {
+            currentPatientId = patientId;
+            const patient = patients.find(p => p.id === patientId);
+            if (!patient) return;
+
+            document.getElementById('pendingPatientName').textContent = `Cama ${patient.bed} - ${patient.name}`;
+            renderPendingList();
+            document.getElementById('pendingModal').classList.add('show');
+        }
+
+        // Renderizar lista de pendientes
+        function renderPendingList() {
+            const patient = patients.find(p => p.id === currentPatientId);
+            if (!patient) return;
+
+            const pendingList = document.getElementById('pendingList');
+            
+            if (!patient.pending || patient.pending.length === 0) {
+                pendingList.innerHTML = '<p style="text-align: center; color: #9ca3af; padding: 20px;">No hay pendientes</p>';
+                return;
+            }
+
+            pendingList.innerHTML = patient.pending.map((item, index) => `
+                <div class="pending-item ${item.urgent ? 'urgent' : ''}" style="${item.completed ? 'opacity: 0.5; text-decoration: line-through;' : ''}">
+                    <input type="checkbox" class="pending-checkbox" ${item.completed ? 'checked' : ''} onchange="togglePending(${index})">
+                    <div class="pending-text">${item.text}${item.urgent ? ' 🔴' : ''}</div>
+                    <div class="pending-date">${new Date(item.timestamp).toLocaleDateString('es-ES')}</div>
+                    <button class="delete-pending" onclick="deletePending(${index})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        // Agregar pendiente
+        function addPending() {
+            const patient = patients.find(p => p.id === currentPatientId);
+            if (!patient) return;
+
+            const text = document.getElementById('newPendingText').value.trim();
+            if (!text) return;
+
+            const urgent = document.getElementById('newPendingUrgency').value === 'urgent';
+
+            if (!patient.pending) {
+                patient.pending = [];
+            }
+
+            patient.pending.push({
+                text: text,
+                urgent: urgent,
+                completed: false,
+                timestamp: new Date().toISOString()
+            });
+
+            document.getElementById('newPendingText').value = '';
+            document.getElementById('newPendingUrgency').value = 'normal';
+
+            savePatients();
+            renderPendingList();
+            renderPatients();
+            updateStats();
+        }
+
+        // Marcar/desmarcar pendiente
+        function togglePending(index) {
+            const patient = patients.find(p => p.id === currentPatientId);
+            if (!patient || !patient.pending[index]) return;
+
+            patient.pending[index].completed = !patient.pending[index].completed;
+
+            savePatients();
+            renderPendingList();
+            renderPatients();
+            updateStats();
+        }
+
+        // Eliminar pendiente
+        function deletePending(index) {
+            const patient = patients.find(p => p.id === currentPatientId);
+            if (!patient) return;
+
+            if (!confirm('¿Eliminar este pendiente?')) return;
+
+            patient.pending.splice(index, 1);
+
+            savePatients();
+            renderPendingList();
+            renderPatients();
+            updateStats();
+        }
+
+        // Renderizar todos los pendientes
+        function renderAllPending() {
+            const content = document.getElementById('allPendingContent');
+            
+            const allPending = patients.flatMap(p => 
+                (p.pending || []).filter(pen => !pen.completed).map(pen => ({
+                    ...pen,
+                    patient: p
+                }))
+            );
+
+            if (allPending.length === 0) {
+                content.innerHTML = '<p style="text-align: center; color: #9ca3af; padding: 40px;">No hay pendientes activos</p>';
+                return;
+            }
+
+            // Agrupar por paciente
+            const byPatient = {};
+            allPending.forEach(pen => {
+                if (!byPatient[pen.patient.id]) {
+                    byPatient[pen.patient.id] = {
+                        patient: pen.patient,
+                        items: []
+                    };
+                }
+                byPatient[pen.patient.id].items.push(pen);
+            });
+
+            content.innerHTML = Object.values(byPatient).map(group => `
+                <div class="form-section">
+                    <h3>Cama ${group.patient.bed} - ${group.patient.name}</h3>
+                    ${group.items.map(item => `
+                        <div class="pending-item ${item.urgent ? 'urgent' : ''}" style="margin-bottom: 10px;">
+                            <div class="pending-text">${item.text}${item.urgent ? ' 🔴' : ''}</div>
+                            <div class="pending-date">${new Date(item.timestamp).toLocaleDateString('es-ES')}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        // Renderizar estadísticas
+        function renderStats() {
+            const content = document.getElementById('statsContent');
+            
+            const totalEvals = patients.reduce((sum, p) => sum + p.evaluations.length, 0);
+            const avgStay = patients.length > 0 
+                ? Math.floor(patients.reduce((sum, p) => {
+                    return sum + Math.floor((new Date() - new Date(p.admissionDate)) / (1000 * 60 * 60 * 24));
+                }, 0) / patients.length)
+                : 0;
+
+            content.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">${patients.length}</div>
+                        <div class="stat-label">Total Pacientes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${totalEvals}</div>
+                        <div class="stat-label">Total Evaluaciones</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${avgStay}</div>
+                        <div class="stat-label">Promedio Estadía (días)</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-left-color: #ef4444;">
+                        <div class="stat-value" style="color: #ef4444;">${patients.filter(p => p.pending && p.pending.some(pen => pen.urgent && !pen.completed)).length}</div>
+                        <div class="stat-label">Pendientes Urgentes</div>
+                    </div>
+                </div>
+
+                <div class="form-section" style="margin-top: 20px;">
+                    <h3>Distribución por Días de Estadía</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                        <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold; color: #2563eb;">${patients.filter(p => {
+                                const days = Math.floor((new Date() - new Date(p.admissionDate)) / (1000 * 60 * 60 * 24));
+                                return days <= 3;
+                            }).length}</div>
+                            <div style="color: #6b7280; font-size: 12px;">≤ 3 días</div>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold; color: #2563eb;">${patients.filter(p => {
+                                const days = Math.floor((new Date() - new Date(p.admissionDate)) / (1000 * 60 * 60 * 24));
+                                return days > 3 && days <= 7;
+                            }).length}</div>
+                            <div style="color: #6b7280; font-size: 12px;">4-7 días</div>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold; color: #2563eb;">${patients.filter(p => {
+                                const days = Math.floor((new Date() - new Date(p.admissionDate)) / (1000 * 60 * 60 * 24));
+                                return days > 7 && days <= 14;
+                            }).length}</div>
+                            <div style="color: #6b7280; font-size: 12px;">8-14 días</div>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold; color: #2563eb;">${patients.filter(p => {
+                                const days = Math.floor((new Date() - new Date(p.admissionDate)) / (1000 * 60 * 60 * 24));
+                                return days > 14;
+                            }).length}</div>
+                            <div style="color: #6b7280; font-size: 12px;">> 14 días</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            document.getElementById('totalPatients').textContent = patients.length;
+            document.getElementById('totalPatientsCount').textContent = patients.length;
+            
+            const altasProximas = patients.filter(p => {
+                if (!p.dischargeDate) return false;
+                const days = Math.ceil((new Date(p.dischargeDate) - new Date()) / (1000 * 60 * 60 * 24));
+                return days <= 3 && days >= 0;
+            }).length;
+            document.getElementById('altasProximas').textContent = altasProximas;
+
+            const totalPending = patients.reduce((sum, p) => 
+                sum + (p.pending ? p.pending.filter(pen => !pen.completed).length : 0), 0
+            );
+            document.getElementById('totalPending').textContent = totalPending;
+        }
+
+        // Eliminar paciente
+        function deletePatient(patientId) {
+            if (!confirm('¿Está seguro de eliminar este paciente? Esta acción no se puede deshacer.')) {
+                return;
+            }
+
+            patients = patients.filter(p => p.id !== patientId);
+            savePatients();
+            renderPatients();
+            updateStats();
+        }
+
+        // Exportar datos
+        function exportAllData() {
+            const data = {
+                version: '1.0',
+                exportDate: new Date().toISOString(),
+                totalPatients: patients.length,
+                patients: patients
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Monitor_Sala_Export_${new Date().toISOString().split('T')[0]}_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            alert('✅ Datos exportados exitosamente');
+        }
+
+        // Mostrar modal de importación
+        function showImportModal() {
+            document.getElementById('importModal').classList.add('show');
+        }
+
+        // Importar datos
+        function importData() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Por favor selecciona un archivo');
+                return;
+            }
+
+            if (!confirm('⚠️ ADVERTENCIA: Esto reemplazará TODOS los datos actuales. ¿Continuar?')) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (!importedData.patients || !Array.isArray(importedData.patients)) {
+                        throw new Error('Formato de archivo inválido');
+                    }
+
+                    patients = importedData.patients;
+                    savePatients();
+                    renderPatients();
+                    updateStats();
+
+                    closeModal('importModal');
+                    alert(`✅ Datos importados exitosamente\n${patients.length} paciente(s) restaurados`);
+                } catch (error) {
+                    alert(`❌ Error al importar datos:\n${error.message}`);
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        // Actualizar estado de conexión
+        function updateConnectionStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (!navigator.onLine) {
+                indicator.classList.add('offline');
+            } else {
+                indicator.classList.remove('offline');
+            }
+        }
+
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+
+        // Iniciar la aplicación
+        window.addEventListener('DOMContentLoaded', init);
+
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker-sala.js')
+                    .then(reg => console.log('Service Worker registrado'))
+                    .catch(err => console.log('Error:', err));
+            });
+        }
+    </script>
+</body>
+</html>

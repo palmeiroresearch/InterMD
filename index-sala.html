@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Sala - Medicina Interna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #2563eb;
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: #16a34a;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .resource-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .resource-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .resource-title {
+            color: #1f2937;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .resource-desc {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .resource-link {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: #1d4ed8;
+        }
+
+        .resource-link.secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .resource-link.secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .info-box {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .info-box h3 {
+            color: #2563eb;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-box li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f4f6;
+            color: #4b5563;
+        }
+
+        .info-box li:last-child {
+            border-bottom: none;
+        }
+
+        .info-box li:before {
+            content: "✓ ";
+            color: #16a34a;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .feature {
+            background: #eff6ff;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #2563eb;
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .feature-text {
+            color: #1f2937;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .header-card {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stats-banner {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header-card">
+            <h1>
+                🏥 Monitor de Sala
+                <span class="version-badge">v1.0</span>
+            </h1>
+            <p class="subtitle">Sistema Completo de Gestión para Medicina Interna</p>
+            <div>
+                <span class="badge">PWA Offline</span>
+                <span class="badge">Datos Permanentes</span>
+                <span class="badge">Fichas Completas</span>
+                <span class="badge">Evaluaciones SOAP</span>
+                <span class="badge">Gestión de Pendientes</span>
+            </div>
+
+            <div class="stats-banner" id="statsBanner" style="display: none;">
+                <div class="stat">
+                    <div class="stat-number" id="totalPatientsStat">0</div>
+                    <div class="stat-label">Pacientes en Sala</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="totalEvalsStat">0</div>
+                    <div class="stat-label">Evaluaciones Registradas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="pendingsStat">0</div>
+                    <div class="stat-label">Pendientes Activos</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="resources-grid">
+            <div class="resource-card" onclick="window.location.href='monitor-sala.html'">
+                <div class="resource-icon">🚀</div>
+                <div class="resource-title">Abrir Aplicación</div>
+                <div class="resource-desc">
+                    Accede al Monitor de Sala completo. Gestiona pacientes, realiza evaluaciones, administra pendientes y genera informes.
+                </div>
+                <a href="monitor-sala.html" class="resource-link">Iniciar Monitor</a>
+            </div>
+
+            <div class="resource-card" onclick="window.location.href='guia-rapida-sala.html'">
+                <div class="resource-icon">📖</div>
+                <div class="resource-title">Guía Rápida</div>
+                <div class="resource-desc">
+                    Aprende a usar el Monitor de Sala en minutos. Instrucciones paso a paso con ejemplos visuales.
+                </div>
+                <a href="guia-rapida-sala.html" class="resource-link secondary">Ver Guía</a>
+            </div>
+
+            <div class="resource-card" onclick="window.open('README-monitor-sala.md', '_blank')">
+                <div class="resource-icon">📄</div>
+                <div class="resource-title">Documentación</div>
+                <div class="resource-desc">
+                    Documentación técnica completa, características avanzadas, personalización y solución de problemas.
+                </div>
+                <a href="README-monitor-sala.md" target="_blank" class="resource-link secondary">Leer Docs</a>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>✨ Características Principales</h3>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🔢</div>
+                    <div class="feature-text">Ordenamiento Inteligente<br>por Cama</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📋</div>
+                    <div class="feature-text">Fichas Completas<br>Editables</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📝</div>
+                    <div class="feature-text">Evaluaciones<br>SOAP Diarias</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚠️</div>
+                    <div class="feature-text">Gestión de<br>Pendientes</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🚨</div>
+                    <div class="feature-text">Alertas de<br>Alergias</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💊</div>
+                    <div class="feature-text">Tratamiento<br>Actualizado</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-text">Informes<br>Completos</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💾</div>
+                    <div class="feature-text">Backup y<br>Restauración</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔍</div>
+                    <div class="feature-text">Búsqueda<br>Avanzada</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-text">100%<br>Offline</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🩺</div>
+                    <div class="feature-text">Signos Vitales<br>Completos</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📈</div>
+                    <div class="feature-text">Estadísticas<br>de Sala</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>🎯 ¿Qué Puedes Hacer?</h3>
+            <ul>
+                <li>Gestionar pacientes ilimitados con fichas completas editables</li>
+                <li>Ordenamiento inteligente por número de cama (1, 2, 3... 7, 8...)</li>
+                <li>Realizar evaluaciones diarias con formato SOAP</li>
+                <li>Registrar signos vitales completos con cálculos automáticos</li>
+                <li>Administrar pendientes con prioridad urgente/normal</li>
+                <li>Alertas visuales para alergias, altas próximas y evaluaciones vencidas</li>
+                <li>Generar informes individuales detallados descargables</li>
+                <li>Buscar por nombre, cama o diagnóstico</li>
+                <li>Exportar e importar datos para respaldo</li>
+                <li>Trabajar completamente offline después de la primera carga</li>
+            </ul>
+        </div>
+
+        <div class="info-box" style="background: #fef2f2; border: 2px solid #ef4444;">
+            <h3>⚠️ Importante - Uso Responsable</h3>
+            <ul style="color: #991b1b;">
+                <li style="border-color: #fecaca;">Esta herramienta es de APOYO, no sustituye el expediente clínico oficial</li>
+                <li style="border-color: #fecaca;">Los datos se almacenan SOLO en tu dispositivo local</li>
+                <li style="border-color: #fecaca;">NO hay sincronización entre dispositivos</li>
+                <li style="border-color: #fecaca;">Usa "Exportar" regularmente para guardar respaldos</li>
+                <li style="border-color: #fecaca;">El juicio clínico siempre es tu responsabilidad</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p><strong>Monitor de Sala v1.0</strong> - Medicina Interna</p>
+            <p>Desarrollado para práctica preprofesional</p>
+            <p style="margin-top: 10px; font-size: 12px;">Noviembre 2025 | Compatible con entornos hospitalarios cubanos</p>
+        </footer>
+    </div>
+
+    <script>
+        // Verificar si hay datos guardados y mostrar estadísticas
+        window.addEventListener('DOMContentLoaded', () => {
+            const stored = localStorage.getItem('sala_patients');
+            if (stored) {
+                try {
+                    const patients = JSON.parse(stored);
+                    if (patients.length > 0) {
+                        // Calcular estadísticas
+                        const totalEvals = patients.reduce((sum, p) => sum + (p.evaluations ? p.evaluations.length : 0), 0);
+                        const totalPending = patients.reduce((sum, p) => 
+                            sum + (p.pending ? p.pending.filter(pen => !pen.completed).length : 0), 0
+                        );
+
+                        // Mostrar estadísticas
+                        document.getElementById('totalPatientsStat').textContent = patients.length;
+                        document.getElementById('totalEvalsStat').textContent = totalEvals;
+                        document.getElementById('pendingsStat').textContent = totalPending;
+                        document.getElementById('statsBanner').style.display = 'flex';
+
+                        // Mostrar notificación
+                        const notification = document.createElement('div');
+                        notification.style.cssText = `
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            background: #16a34a;
+                            color: white;
+                            padding: 15px 20px;
+                            border-radius: 10px;
+                            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+                            z-index: 1000;
+                            animation: slideIn 0.3s ease;
+                        `;
+                        notification.innerHTML = `
+                            <strong>📊 Datos Guardados</strong><br>
+                            <span style="font-size: 14px;">Tienes ${patients.length} paciente(s) en seguimiento</span>
+                        `;
+                        document.body.appendChild(notification);
+
+                        setTimeout(() => {
+                            notification.style.opacity = '0';
+                            notification.style.transition = 'opacity 0.3s ease';
+                            setTimeout(() => notification.remove(), 300);
+                        }, 5000);
+                    }
+                } catch (e) {
+                    console.error('Error al leer datos:', e);
+                }
+            }
+        });
+
+        // Animación
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
